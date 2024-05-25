@@ -8,29 +8,37 @@
 ;===============================================================
 servo:
 ;-----------
-    CPI   R26, 0
+check:
+    SBIS  PORTB,0
+    RET   
+    SBIS  PORTB,1
     BREQ  rotate_ninety
+    JMP   rotate_zero
 ;---------------------------------------------------------------
-rotate_zero:     
+rotate_zero:
+    CBI   PORTB,1
     LDI   ZL, lo8(zero)
     LDI   ZH, hi8(zero)
     JMP   move_servo
+    
 rotate_ninety:
+    SBI   PORTB,1
     LDI   ZL, lo8(ninety)
     LDI   ZH, hi8(ninety)
     ;-----------------------------------------------------------
+    
 move_servo: 
-    COM   R26
-    LPM   R24, Z+         ;load rotation pos
+    LPM   R24, Z         ;load rotation pos
     RCALL rotate_servo    ;& rotate servo
+    CBI   PORTB,0
     RET
     ;-----------------------------------------------------------
     
 ;---------------------------------------------------------------
 zero:
-.byte 40
-ninety:
 .byte 90
+ninety:
+.byte 40
 ;===============================================================
 rotate_servo:
 ;------------
@@ -50,44 +58,44 @@ bak:RCALL delay_ms        ;0.5s delay
 ;===============================================================
 delay_timer0:             ;delay via Timer0
     ;-----------------------------------------------------------
-    CLR   R21
-    OUT   TCNT0, R21      ;initialize timer0 with count=0
-    MOV   R21, R24
-    OUT   OCR0A, R21
-    LDI   R21, 0b00001100
-    OUT   TCCR0B, R21     ;timer0: CTC mode, prescaler 256
+    CLR   R26
+    OUT   TCNT0, R26      ;initialize timer0 with count=0
+    MOV   R26, R24
+    OUT   OCR0A, R26
+    LDI   R26, 0b00001100
+    OUT   TCCR0B, R26     ;timer0: CTC mode, prescaler 256
     ;-----------------------------------------------------------
-l3: IN    R21, TIFR0      ;get TIFR0 byte & check
-    SBRS  R21, OCF0A      ;if OCF0=1, skip next instruction
+l3: IN    R26, TIFR0      ;get TIFR0 byte & check
+    SBRS  R26, OCF0A      ;if OCF0=1, skip next instruction
     RJMP  l3              ;else, loop back & check OCF0 flag
     ;-----------------------------------------------------------
-    CLR   R21
-    OUT   TCCR0B, R21     ;stop timer0
+    CLR   R26
+    OUT   TCCR0B, R26     ;stop timer0
     ;-----------------------------------------------------------
-    LDI   R21, (1<<OCF0A)
-    OUT   TIFR0, R21      ;clear OCF0 flag
+    LDI   R26, (1<<OCF0A)
+    OUT   TIFR0, R26      ;clear OCF0 flag
     RET
 ;===============================================================
 delay_20ms:               ;delay 20ms
-    LDI   R21, 255
-l4: LDI   R22, 210
-l5: LDI   R23, 2
-l6: DEC   R23
+    LDI   R26, 255
+l4: LDI   R30, 210
+l5: LDI   R31, 2
+l6: DEC   R31
     BRNE  l6
-    DEC   R22
+    DEC   R30
     BRNE  l5
-    DEC   R21
+    DEC   R26
     BRNE  l4
     RET
 ;===============================================================
 delay_ms:                 ;delay 0.5s
-    LDI   R21, 255
-l7 :LDI   R22, 255
-l8 :LDI   R23, 41
-l9 :DEC   R23
+    LDI   R26, 255
+l7 :LDI   R30, 255
+l8 :LDI   R31, 41
+l9 :DEC   R31
     BRNE  l9
-    DEC   R22
+    DEC   R30
     BRNE  l8
-    DEC   R21
+    DEC   R26
     BRNE  l7
     RET

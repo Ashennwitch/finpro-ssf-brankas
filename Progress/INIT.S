@@ -30,4 +30,14 @@ SBI   DDRC, 0     ;set pin PC0 as i/p for ADC0
 SBI   DDRC, 1     ;set pin PC0 as i/p for ADC0
 SBI   DDRC, 2     ;set pin PC0 as i/p for ADC0
 
+interrupt_init:
+CBI   DDRD,  2       ; Clear bit 2 in DDRD, setting PD2 as input
+SBI   DDRB,  0
+SBI   DDRB,  1
+LDI R23, (1<<INT0)  ; Load immediate value (1<<INT0) into register R23
+OUT EIMSK, R23      ; Enable INT0 interrupt
+LDI R23, (1<<ISC01) ; Configure INT0 to trigger on falling edge
+STS EICRA, R23
+
+SEI                 ; Enable global interrupts
 RET

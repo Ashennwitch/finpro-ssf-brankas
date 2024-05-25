@@ -1,6 +1,7 @@
 #define __SFR_OFFSET 0x00
 #include "avr/io.h"
 .global adc_loop
+.global myDelay
 
 LCD_buffer:
 LDS R27, UCSR0A
@@ -77,14 +78,16 @@ RCALL myDelay
 RJMP  adc_loop
 
 adc_loop:
-STS UDR0, R01
+STS UDR0, R16
 INC R25
-CPI R25,1
+CPI R25, 1
 BREQ adc_init1
 CPI R25,2
 BREQ adc_init2
 CPI R25,3
 BREQ adc_init3
+CPI R25,4
+BREQ exit
 
 adc_init1:
 LDI   R20, 0xFF
@@ -102,8 +105,12 @@ adc_init3:
 LDI   R20, 0xFF
 LDI   R20, 0xC2   ;internal 2.56V, right-justified data, ADC2
 STS   ADMUX, R20
-MOV   R25,0
 JMP   read_ADC
+
+exit:
+MOV   R25, 0
+RCALL myDelay
+RET
 
 myDelay:
 LDI R20, 255

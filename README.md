@@ -17,7 +17,7 @@ The hardware design includes:
 - **Transistor and Buzzer:** Alarm system.
 
 ### Schematic and Connections
-The schematic, created using Proteus, illustrates the connections among components. Arduino Uno is the central microcontroller, connected to MAX7219 LED Dot Matrix, potentiometers, buttons, LEDs, LDR photoresistor, servo, and buzzer. 
+The schematic, created using Proteus, illustrates the connections among components. Arduino Uno is the central microcontroller, connected to MAX7219 LED Dot Matrix, potentiometers, buttons, LEDs, LDR photoresistor, servo, and buzzer. **Check file .pdsprj on the master**
 
 ## Software Implementation
 Software development uses Assembly for Arduino operations and C for the main program. The workflow involves:
